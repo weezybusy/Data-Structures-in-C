@@ -5,9 +5,9 @@
 #include "stack.h"
 
 void test_stack(void);
-void test_push(void);
-void test_pop(void);
-void test_peek(void);
+void test_stack_push(void);
+void test_stack_pop(void);
+void test_stack_peek(void);
 
 int main(void)
 {
@@ -17,12 +17,12 @@ int main(void)
 
 void test_stack(void)
 {
-        test_peek();
-        test_push();
-        test_pop();
+        test_stack_peek();
+        test_stack_push();
+        test_stack_pop();
 }
 
-void test_peek(void)
+void test_stack_peek(void)
 {
         stack_t stack;
         stack_init(&stack, free);
@@ -58,12 +58,11 @@ void test_peek(void)
         assert(stack.size == ++size);
         assert(*(int *) stack_peek(&stack) == val3);
 
-
         stack_destroy(&stack);
         printf("%-30s ok\n", __func__);
 }
 
-void test_push(void)
+void test_stack_push(void)
 {
         stack_t stack;
         stack_init(&stack, free);
@@ -111,7 +110,7 @@ void test_push(void)
         printf("%-30s ok\n", __func__);
 }
 
-void test_pop(void)
+void test_stack_pop(void)
 {
         stack_t stack;
         stack_init(&stack, free);
@@ -153,17 +152,17 @@ void test_pop(void)
         // Pop data.
         assert(stack_pop(&stack, (void **) &data) != -1);
         assert(stack.size == --size);
-        assert(*data == 77);
+        assert(*data == val3);
         free(data);
 
         assert(stack_pop(&stack, (void **) &data) != -1);
         assert(stack.size == --size);
-        assert(*data == 66);
+        assert(*data == val2);
         free(data);
 
         assert(stack_pop(&stack, (void **) &data) != -1);
         assert(stack.size == --size);
-        assert(*data == 55);
+        assert(*data == val1);
         free(data);
 
         stack_destroy(&stack);
