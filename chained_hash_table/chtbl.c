@@ -76,7 +76,7 @@ int chtbl_remove(chtbl_t *htbl, void **data)
         prev = NULL;
         for (curr = list_head(&htbl->table[bucket]); curr != NULL;
                         curr = list_next(curr)) {
-                if (htbl->compare(*data ,list_data(curr)) == 0) {
+                if (htbl->compare(*data, list_data(curr)) == 0) {
                         // Remove the data from the bucket.
                         if (list_remove_next(&htbl->table[bucket],
                                                 prev, data) == 0) {

@@ -26,7 +26,7 @@ int main(void)
 void test_chtbl(void)
 {
         test_chtbl_insert();
-        //test_chtbl_remove();
+        test_chtbl_remove();
         //test_chtbl_lookup();
 }
 
@@ -63,6 +63,58 @@ void test_chtbl_insert(void)
 
 void test_chtbl_remove(void)
 {
+        chtbl_t htbl;
+        int value = 0;
+        int *data = NULL;
+        size_t size = 0;;
+
+        // Check removing element from the empty table.
+        value = 5;
+        data = &value;
+        chtbl_init(&htbl, BUCKETS, h, compare, free);
+        assert(htbl.size == 0);
+        assert(chtbl_remove(&htbl, (void **) &data) == -1);
+        assert(htbl.size == 0);
+        chtbl_destroy(&htbl);
+
+        // Check removing element which is in the table.
+        size = 5;
+        chtbl_fill(&htbl, size);
+        value = size - 1;
+        data = &value;
+        assert(htbl.size == size);
+        assert(chtbl_remove(&htbl, (void **) &data) == 0);
+        assert(htbl.size == size - 1);
+        assert(*data == value);
+        free(data);
+        chtbl_destroy(&htbl);
+
+        // Check removing element not in the table.
+        size = 5;
+        chtbl_fill(&htbl, size);
+        value = 25;
+        data = &value;
+        assert(htbl.size == size);
+        assert(chtbl_remove(&htbl, (void **) &data) == -1);
+        assert(htbl.size == size);
+        chtbl_destroy(&htbl);
+
+        // Check removing all the elements.
+        size = 5;
+        data = NULL;
+        chtbl_fill(&htbl, size);
+        while (size > 0) {
+                value = size - 1;
+                data = &value;
+                assert(htbl.size == size);
+                assert(chtbl_remove(&htbl, (void **) &data) == 0);
+                assert(htbl.size == --size);
+                assert(*data == value);
+                free(data);
+        }
+        assert(htbl.size == 0);
+        chtbl_destroy(&htbl);
+
         printf("%-30s ok\n", __func__);
 }
 
@@ -88,7 +140,7 @@ int compare(const void *value1, const void *value2)
 int h(const void *key)
 {
         int value = *(int *) key;
-        return value % BUCKETS;
+        return value;
 }
 
 void display_chtbl(const chtbl_t *htbl)
