@@ -27,7 +27,7 @@ void test_chtbl(void)
 {
         test_chtbl_insert();
         test_chtbl_remove();
-        //test_chtbl_lookup();
+        test_chtbl_lookup();
 }
 
 void test_chtbl_insert(void)
@@ -120,6 +120,51 @@ void test_chtbl_remove(void)
 
 void test_chtbl_lookup(void)
 {
+        chtbl_t htbl;
+        int value = 0;
+        int *data = NULL;
+        size_t size = 0;;
+
+        // Check lookup of the element in the empty table.
+        value = 5;
+        data = &value;
+        chtbl_init(&htbl, BUCKETS, h, compare, free);
+        assert(htbl.size == 0);
+        assert(chtbl_lookup(&htbl, (void **) &data) == -1);
+        chtbl_destroy(&htbl);
+
+        // Check lookup of the element which is in the table.
+        size = 5;
+        chtbl_fill(&htbl, size);
+        value = size - 1;
+        data = &value;
+        assert(htbl.size == size);
+        assert(chtbl_lookup(&htbl, (void **) &data) == 0);
+        assert(*data == value);
+        chtbl_destroy(&htbl);
+
+        // Check lookup of the element which is not in the table.
+        size = 5;
+        chtbl_fill(&htbl, size);
+        value = 25;
+        data = &value;
+        assert(htbl.size == size);
+        assert(chtbl_lookup(&htbl, (void **) &data) == -1);
+        chtbl_destroy(&htbl);
+
+        // Check lookup of all the elements.
+        size = 5;
+        data = NULL;
+        chtbl_fill(&htbl, size);
+        for (size_t i = 0; i < htbl.size; i++) {
+                value = i;
+                data = &value;
+                assert(chtbl_lookup(&htbl, (void **) &data) == 0);
+                assert(*data == (int) i);
+        }
+        assert(htbl.size == size);
+        chtbl_destroy(&htbl);
+
         printf("%-30s ok\n", __func__);
 }
 
