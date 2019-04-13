@@ -28,7 +28,7 @@ int chtbl_init(chtbl_t *htbl, size_t buckets, int (*h)(const void *key),
 void chtbl_destroy(chtbl_t *htbl)
 {
         // Destroy buckets.
-        for (size_t i = 0; i < htbl->size; i++) {
+        for (size_t i = 0; i < htbl->buckets; i++) {
                 list_destroy(&htbl->table[i]);
         }
 
