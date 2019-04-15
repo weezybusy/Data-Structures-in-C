@@ -3,7 +3,7 @@
 
 #include "ohtbl.h"
 
-/* Reserve a sentrinel memory address for vacated elements. */
+/* Reserve a sentinel memory address for vacated elements. */
 static char vacated;
 
 int ohtbl_init(ohtbl_t *htbl, size_t positions,
