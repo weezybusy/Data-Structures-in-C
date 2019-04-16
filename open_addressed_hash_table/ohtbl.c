@@ -73,7 +73,7 @@ int ohtbl_remove(ohtbl_t *htbl, void **data)
 {
         // Use double hashing to hash key.
         for (size_t i = 0; i < htbl->positions; i++) {
-                size_t pos = (htbl->h1(data) + (i * htbl->h2(data))) % htbl->positions;
+                size_t pos = (htbl->h1(*data) + (i * htbl->h2(*data))) % htbl->positions;
                 if (htbl->table[pos] == NULL) {
                         // Return that data was not found.
                         return -1;
@@ -96,7 +96,7 @@ int ohtbl_lookup(const ohtbl_t *htbl, void **data)
 {
         // Use double hashing to hash key.
         for (size_t i = 0; i < htbl->positions; i++) {
-                size_t pos = (htbl->h1(data) + (i * htbl->h2(data))) % htbl->positions;
+                size_t pos = (htbl->h1(*data) + (i * htbl->h2(*data))) % htbl->positions;
                 if (htbl->table[pos] == NULL) {
                         // Return that data was not found.
                         return -1;
