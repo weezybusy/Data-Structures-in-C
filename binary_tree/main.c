@@ -11,6 +11,7 @@ void test_bitree_insert_left(void);
 void test_bitree_insert_right(void);
 void test_bitree_remove_left(void);
 void test_bitree_remove_right(void);
+void test_bitree_merge(void);
 
 void bitree_fill(bitree_t *tree, btnode_t *root, size_t height);
 
@@ -28,6 +29,7 @@ void test_bitree(void)
         test_bitree_insert_right();
         test_bitree_remove_left();
         test_bitree_remove_right();
+        test_bitree_merge();
 }
 
 void test_bitree_init(void)
@@ -172,6 +174,7 @@ void test_bitree_remove_left(void)
         int *data = NULL;
         int value = 1;
         size_t height = 0;
+        size_t nodes_num = 0;
 
         // Check left-removing from an empty tree.
         bitree_init(&tree, free);
@@ -187,7 +190,8 @@ void test_bitree_remove_left(void)
         bitree_init(&tree, free);
         height = 1;
         bitree_fill(&tree, tree.root, height);
-        assert(tree.size == 1);
+        nodes_num = (1 << height) - 1;
+        assert(tree.size == nodes_num);
         bitree_remove_left(&tree, NULL);
         assert(tree.size == 0);
         bitree_destroy(&tree);
@@ -196,27 +200,29 @@ void test_bitree_remove_left(void)
         bitree_init(&tree, free);
         height = 3;
         bitree_fill(&tree, tree.root, height);
-        assert(tree.size == 7);
+        nodes_num = (1 << height) - 1;
+        assert(tree.size == nodes_num);
         bitree_remove_left(&tree, tree.root);
-        assert(tree.size == 4);
+        assert(tree.size == nodes_num / 2 + 1);
         bitree_destroy(&tree);
 
         // Check left-removing root->left->left leaf element.
         bitree_init(&tree, free);
         height = 3;
         bitree_fill(&tree, tree.root, height);
-        assert(tree.size == 7);
+        nodes_num = (1 << height) - 1;
+        assert(tree.size == nodes_num);
         bitree_remove_left(&tree, bitree_left(tree.root));
-        assert(tree.size == 6);
+        assert(tree.size == nodes_num - 1);
         bitree_destroy(&tree);
 
         // Check left-removing root->right->left leaf element.
         bitree_init(&tree, free);
         height = 3;
         bitree_fill(&tree, tree.root, height);
-        assert(tree.size == 7);
+        nodes_num = (1 << height) - 1;
         bitree_remove_left(&tree, bitree_right(tree.root));
-        assert(tree.size == 6);
+        assert(tree.size == nodes_num - 1);
         bitree_destroy(&tree);
 
         printf("%-30s ok\n", __func__);
@@ -228,6 +234,7 @@ void test_bitree_remove_right(void)
         int *data = NULL;
         int value = 1;
         size_t height = 0;
+        size_t nodes_num = 0;
 
         // Check right-removing from an empty tree.
         bitree_init(&tree, free);
@@ -243,7 +250,8 @@ void test_bitree_remove_right(void)
         bitree_init(&tree, free);
         height = 1;
         bitree_fill(&tree, tree.root, height);
-        assert(tree.size == 1);
+        nodes_num = (1 << height) - 1;
+        assert(tree.size == nodes_num);
         bitree_remove_right(&tree, NULL);
         assert(tree.size == 0);
         bitree_destroy(&tree);
@@ -252,28 +260,112 @@ void test_bitree_remove_right(void)
         bitree_init(&tree, free);
         height = 3;
         bitree_fill(&tree, tree.root, height);
-        assert(tree.size == 7);
+        nodes_num = (1 << height) - 1;
+        assert(tree.size == nodes_num);
         bitree_remove_right(&tree, tree.root);
-        assert(tree.size == 4);
+        assert(tree.size == nodes_num / 2 + 1);
         bitree_destroy(&tree);
 
         // Check right-removing root->left->right leaf element.
         bitree_init(&tree, free);
         height = 3;
         bitree_fill(&tree, tree.root, height);
-        assert(tree.size == 7);
+        nodes_num = (1 << height) - 1;
+        assert(tree.size == nodes_num);
         bitree_remove_right(&tree, bitree_left(tree.root));
-        assert(tree.size == 6);
+        assert(tree.size == nodes_num - 1);
         bitree_destroy(&tree);
 
         // Check right-removing root->right->right leaf element.
         bitree_init(&tree, free);
         height = 3;
         bitree_fill(&tree, tree.root, height);
-        assert(tree.size == 7);
+        nodes_num = (1 << height) - 1;
+        assert(tree.size == nodes_num);
         bitree_remove_right(&tree, bitree_right(tree.root));
-        assert(tree.size == 6);
+        assert(tree.size == nodes_num - 1);
         bitree_destroy(&tree);
+
+        printf("%-30s ok\n", __func__);
+}
+
+void test_bitree_merge(void)
+{
+        bitree_t tree1;
+        bitree_t tree2;
+        bitree_t merged_tree;
+        int *data = NULL;
+        int value = 1;
+        size_t height1 = 0;
+        size_t height2 = 0;
+        size_t nodes_num1 = 0;
+        size_t nodes_num2 = 0;
+
+        // Check merging of two empty trees.
+        bitree_init(&tree1, free);
+        bitree_init(&tree2, free);
+        assert((data = (int *) malloc(sizeof(int))) != NULL);
+        *data = value;
+        nodes_num1 = 1;
+        bitree_merge(&merged_tree, &tree1, &tree2, data);
+        assert(merged_tree.size == nodes_num1);
+        assert(*(int *) bitree_data(merged_tree.root) == value);
+        bitree_destroy(&tree1);
+        bitree_destroy(&tree2);
+        bitree_destroy(&merged_tree);
+        data = NULL;
+
+        // Check merging of full and empty trees.
+        bitree_init(&tree1, free);
+        bitree_init(&tree2, free);
+        assert((data = (int *) malloc(sizeof(int))) != NULL);
+        *data = value;
+        height1 = 3;
+        nodes_num1 = (1 << height1) - 1;
+        bitree_fill(&tree1, tree1.root, height1);
+        assert(tree1.size == nodes_num1);
+        bitree_merge(&merged_tree, &tree1, &tree2, data);
+        assert(merged_tree.size == nodes_num1 + 1);
+        bitree_destroy(&tree1);
+        bitree_destroy(&tree2);
+        bitree_destroy(&merged_tree);
+        data = NULL;
+
+        // Check merging of empty and full trees.
+        bitree_init(&tree1, free);
+        bitree_init(&tree2, free);
+        assert((data = (int *) malloc(sizeof(int))) != NULL);
+        *data = value;
+        height1 = 4;
+        nodes_num1 = (1 << height1) - 1;
+        bitree_fill(&tree2, tree2.root, height1);
+        assert(tree2.size == nodes_num1);
+        bitree_merge(&merged_tree, &tree1, &tree2, data);
+        assert(merged_tree.size == nodes_num1 + 1);
+        bitree_destroy(&tree1);
+        bitree_destroy(&tree2);
+        bitree_destroy(&merged_tree);
+        data = NULL;
+
+        // Check merging of two full trees.
+        bitree_init(&tree1, free);
+        bitree_init(&tree2, free);
+        assert((data = (int *) malloc(sizeof(int))) != NULL);
+        *data = value;
+        height1 = 4;
+        height2 = 5;
+        nodes_num1 = (1 << height1) - 1;
+        nodes_num2 = (1 << height2) - 1;
+        bitree_fill(&tree1, tree1.root, height1);
+        bitree_fill(&tree2, tree2.root, height2);
+        assert(tree1.size == nodes_num1);
+        assert(tree2.size == nodes_num2);
+        bitree_merge(&merged_tree, &tree1, &tree2, data);
+        assert(merged_tree.size == nodes_num1 + nodes_num2 + 1);
+        bitree_destroy(&tree1);
+        bitree_destroy(&tree2);
+        bitree_destroy(&merged_tree);
+        data = NULL;
 
         printf("%-30s ok\n", __func__);
 }
