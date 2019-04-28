@@ -5,7 +5,7 @@
 
 #include "list.h"
 
-typedef struct chtbl {
+typedef struct _chtbl {
         size_t buckets;
         int (*h)(const void *key);
         int (*compare)(const void *value1, const void *value2);
