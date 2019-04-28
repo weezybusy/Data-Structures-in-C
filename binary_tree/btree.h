@@ -1,5 +1,5 @@
-#ifndef BITREE_H
-#define BITREE_H
+#ifndef BTREE_H
+#define BTREE_H
 
 #include <stdlib.h>
 

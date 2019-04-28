@@ -3,7 +3,7 @@
 
 #include <stdlib.h>
 
-typedef struct ohtbl {
+typedef struct _ohtbl {
         size_t positions;
         void *vacated;
         int (*h1)(const void *key);
