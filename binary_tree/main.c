@@ -13,7 +13,7 @@ void test_btree_remove_left(void);
 void test_btree_remove_right(void);
 void test_btree_merge(void);
 
-void btree_fill(btree_t *tree, bt_node_t *root, size_t height);
+void btree_fill(btree_t *tree, btnode_t *root, size_t height);
 
 int main(void)
 {
@@ -370,7 +370,7 @@ void test_btree_merge(void)
         printf("%-30s ok\n", __func__);
 }
 
-void btree_fill(btree_t *tree, bt_node_t *root, size_t height)
+void btree_fill(btree_t *tree, btnode_t *root, size_t height)
 {
         int *data = NULL;
         int value = 1;

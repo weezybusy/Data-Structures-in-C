@@ -20,10 +20,10 @@ void btree_destroy(btree_t *tree)
         memset(tree, 0, sizeof(btree_t));
 }
 
-int btree_insert_left(btree_t *tree, bt_node_t *node, const void *data)
+int btree_insert_left(btree_t *tree, btnode_t *node, const void *data)
 {
-        bt_node_t *new_node = NULL;
-        bt_node_t **position = NULL;
+        btnode_t *new_node = NULL;
+        btnode_t **position = NULL;
 
         // Determine where to insert the node.
         if (node == NULL) {
@@ -41,7 +41,7 @@ int btree_insert_left(btree_t *tree, bt_node_t *node, const void *data)
         }
 
         // Allocate storage for the node.
-        new_node = (bt_node_t *) malloc(sizeof(bt_node_t));
+        new_node = (btnode_t *) malloc(sizeof(btnode_t));
         if (new_node == NULL) {
                 return -1;
         }
@@ -58,10 +58,10 @@ int btree_insert_left(btree_t *tree, bt_node_t *node, const void *data)
         return 0;
 }
 
-int btree_insert_right(btree_t *tree, bt_node_t *node, const void *data)
+int btree_insert_right(btree_t *tree, btnode_t *node, const void *data)
 {
-        bt_node_t *new_node = NULL;
-        bt_node_t **position = NULL;
+        btnode_t *new_node = NULL;
+        btnode_t **position = NULL;
 
         // Determine where to insert the node.
         if (node == NULL) {
@@ -79,7 +79,7 @@ int btree_insert_right(btree_t *tree, bt_node_t *node, const void *data)
         }
 
         // Allocate storage for the node.
-        new_node = (bt_node_t *) malloc(sizeof(bt_node_t));
+        new_node = (btnode_t *) malloc(sizeof(btnode_t));
         if (new_node == NULL) {
                 return -1;
         }
@@ -96,9 +96,9 @@ int btree_insert_right(btree_t *tree, bt_node_t *node, const void *data)
         return 0;
 }
 
-void btree_remove_left(btree_t *tree, bt_node_t *node)
+void btree_remove_left(btree_t *tree, btnode_t *node)
 {
-        bt_node_t **position;
+        btnode_t **position;
 
         // Do not allow removal from an empty tree.
         if (btree_size(tree) == 0) {
@@ -128,9 +128,9 @@ void btree_remove_left(btree_t *tree, bt_node_t *node)
         }
 }
 
-void btree_remove_right(btree_t *tree, bt_node_t *node)
+void btree_remove_right(btree_t *tree, btnode_t *node)
 {
-        bt_node_t **position;
+        btnode_t **position;
 
         // Do not allow removal from an empty tree.
         if (btree_size(tree) == 0) {
