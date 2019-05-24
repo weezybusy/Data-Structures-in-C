@@ -9,11 +9,10 @@ void test_bstree_init(void);
 void test_bstree_destroy(void);
 void test_bstree_insert(void);
 void test_bstree_remove(void);
-void test_bstree_lookup(void);
 
 int main(void)
 {
-        test_bstree(void);
+        test_bstree();
         return EXIT_SUCCESS;
 }
 
@@ -23,7 +22,6 @@ void test_bstree(void)
         test_bstree_destroy();
         test_bstree_insert();
         test_bstree_remove();
-        test_bstree_lookup();
 }
 
 void test_bstree_init(void)
@@ -42,11 +40,6 @@ void test_bstree_insert(void)
 }
 
 void test_bstree_remove(void)
-{
-        printf("%-30s ok\n", __func__);
-}
-
-void test_bstree_lookup(void)
 {
         printf("%-30s ok\n", __func__);
 }

@@ -6,7 +6,7 @@ CFLAGS   := -g -std=c99 -Wall -Werror -Wextra -Wpedantic
 SOURCES  := $(wildcard *.c)
 INCLUDES := $(wildcard *.h)
 OBJECTS  := $(SOURCES:.c=.o)
-TARGET   := bistree
+TARGET   := bstree
 
 $(TARGET): $(OBJECTS)
 	$(CC) $(CFLAGS) $^ -o $@
