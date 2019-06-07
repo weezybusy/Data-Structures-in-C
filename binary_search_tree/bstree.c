@@ -3,6 +3,8 @@
 
 #include "bstree.h"
 
+/* Auxiliary functions. -------------------------------------------------- */
+
 static void destroy_right(bstree_t *tree, btnode_t *node);
 
 static void rotate_left(btnode_t **node)
@@ -297,20 +299,96 @@ static int insert(bstree_t *tree, btnode_t **node, const void *data,
         return 0;
 }
 
-int bstree_remove(bstree_t *tree, const void *data);
+static int hide(bstree_t *tree, btnode_t *node, const void *data)
+{
+        int cmpval;
+        int retval = 0;
 
-int bstree_lookup(bstree_t *tree, void **data);
+        if (btree_is_eob(node)) {
+                // Return that the data was not found.
+                return -1;
+        }
+
+        cmpval = tree->compare(data, ((avlnode_t *) btree_data(node))->data);
+
+        if (cmpval < 0) {
+                // Move to the left.
+                retval = hide(tree, btree_left(node), data);
+        } else if (cmpval > 0) {
+                // Move to the right.
+                retval = hide(tree, btree_right(node), data);
+        } else {
+                // Mark the node as hidden.
+                ((avlnode_t *) btree_data(node))->hidden = 1;
+                retval = retval;
+        }
+
+        return retval;
+}
+
+static int lookup(bstree_t *tree, btnode_t *node, void **data)
+{
+        int cmpval;
+        int retval = 0;
+
+        if (btree_is_eob(node)) {
+                // Return that the data was not found.
+                return -1;
+        }
+
+        cmpval = tree->compare(*data, ((avlnode_t *) btree_data(node))->data);
+
+        if (cmpval < 0) {
+                // Move to the left.
+                retval = lookup(tree, btree_left(node), data);
+        } else if (cmpval < 0) {
+                // Move to the right.
+                retval = lookup(tree, btree_right(node), data);
+        } else {
+                if (!((avlnode_t *) btree_data(node))->hidden) {
+                        // Pass back the data from the tree.
+                        *data = ((avlnode_t *) btree_data(node))->data;
+                } else {
+                        // Retrun that the data was not found.
+                        retval = -1;
+                }
+        }
+
+        return retval;
+}
+
+/* Public interface implementation. --------------------------------------- */
 
 void bstree_init(bstree_t *tree,
                 int (*compare)(const void *key1, const void *key2),
                 void (*destroy)(void *data))
 {
+        // Initialize the tree.
         btree_init(tree, destroy);
         tree->compare = compare;
 }
 
 void bstree_destroy(bstree_t *tree)
 {
-       //destroy_left(tree, NULL);
-       memset(tree, 0, sizeof(bstree_t));
+        // Destroy all nodes in the tree.
+        destroy_left(tree, NULL);
+
+        // No operations are allowed now, clear the structure.
+        memset(tree, 0, sizeof(bstree_t));
+}
+
+int bstree_insert(bstree_t *tree, const void *data)
+{
+        int balanced = 0;
+        return insert(tree, &btree_root(tree), data, &balanced);
+}
+
+int bstree_remove(bstree_t *tree, const void *data)
+{
+        return hide(tree, btree_root(tree), data);
+}
+
+int bstree_lookup(bstree_t *tree, void **data)
+{
+        return lookup(tree, btree_root(tree), data);
 }
