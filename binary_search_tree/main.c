@@ -43,15 +43,45 @@ void test_bstree_insert(void)
 {
         bstree_t tree;
         bstree_init(&tree, compare, free);
+        size_t tree_size = bstree_size(&tree);
 
-        assert(bstree_size(&tree) == 0);
-
-        int *data = (int *) malloc(sizeof(int));
+        *data = (int *) malloc(sizeof(int));
         assert(data != NULL);
-        *data = 5;
+        int val = 5;
+        *data = val;
         bstree_insert(&tree, (void *) data);
-        assert(bstree_size(&tree) == 1);
-        // Add more values.
+        tree_size++;
+
+        // Check tree size.
+        assert(bstree_size(&tree) == tree_size);
+        // Check the data is correct.
+        assert(*(int *) ((avlnode_t *) btree_data(btree_root(&tree)))->data == val);
+        // Check the balance factor.
+        assert(((avlnode_t *) btree_data(btree_root(&tree)))->factor == AVL_BALANCED);
+
+        data = (int *) malloc(sizeof(int));
+        assert(data != NULL);
+        val = 4;
+        *data = val;
+        bstree_insert(&tree, (void *) data);
+        tree_size++;
+
+        assert(bstree_size(&tree) == tree_size);
+        assert(*(int *) ((avlnode_t *) btree_data(btree_left(btree_root(&tree))))->data == val);
+        assert(((avlnode_t *) btree_data(btree_root(&tree)))->factor == AVL_LEFT_HEAVY);
+        assert(((avlnode_t *) btree_data(btree_left(btree_root(&tree))))->factor == AVL_BALANCED);
+
+        data = (int *) malloc(sizeof(int));
+        assert(data != NULL);
+        val = 6;
+        *data = val;
+        bstree_insert(&tree, (void *) data);
+        tree_size++;
+
+        assert(bstree_size(&tree) == tree_size);
+        assert(*(int *) ((avlnode_t *) btree_data(btree_right(btree_root(&tree))))->data == val);
+        assert(((avlnode_t *) btree_data(btree_root(&tree)))->factor == AVL_BALANCED);
+        assert(((avlnode_t *) btree_data(btree_left(btree_root(&tree))))->factor == AVL_BALANCED);
 
         bstree_destroy(&tree);
 
@@ -60,6 +90,10 @@ void test_bstree_insert(void)
 
 void test_bstree_remove(void)
 {
+        bstree_t tree;
+        bstree_init(&tree, compare, free);
+        //size_t tree_size = bstree_size(&tree);
+
         printf("%-30s ok\n", __func__);
 }
 
