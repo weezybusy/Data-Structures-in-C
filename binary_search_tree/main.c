@@ -11,7 +11,7 @@ void test_bstree_insert(void);
 void test_bstree_remove(void);
 
 static int compare(const void *value1, const void *value2);
-//static void fill(bstree_t *tree, int values[], size_t n);
+static void fill(bstree_t *tree, int values[], size_t n);
 
 int main(void)
 {
@@ -22,9 +22,9 @@ int main(void)
 void test_bstree(void)
 {
         test_bstree_init();
-        //test_bstree_destroy();
+        test_bstree_destroy();
         test_bstree_insert();
-        //test_bstree_remove();
+        test_bstree_remove();
 }
 
 void test_bstree_init(void)
@@ -35,6 +35,7 @@ void test_bstree_init(void)
         assert(tree.compare == compare);
         assert(tree.destroy == free);
         assert(tree.root == NULL);
+        bstree_destroy(&tree);
 
         printf("%-30s ok\n", __func__);
 }
@@ -44,8 +45,9 @@ void test_bstree_insert(void)
         bstree_t tree;
         bstree_init(&tree, compare, free);
         size_t tree_size = bstree_size(&tree);
+        int *data = NULL;
 
-        *data = (int *) malloc(sizeof(int));
+        data = (int *) malloc(sizeof(int));
         assert(data != NULL);
         int val = 5;
         *data = val;
@@ -83,6 +85,9 @@ void test_bstree_insert(void)
         assert(((avlnode_t *) btree_data(btree_root(&tree)))->factor == AVL_BALANCED);
         assert(((avlnode_t *) btree_data(btree_left(btree_root(&tree))))->factor == AVL_BALANCED);
 
+
+        // TODO: Check inserting the data which is already in.
+
         bstree_destroy(&tree);
 
         printf("%-30s ok\n", __func__);
@@ -90,9 +95,18 @@ void test_bstree_insert(void)
 
 void test_bstree_remove(void)
 {
+        // TODO: Check removing from the empty tree.
         bstree_t tree;
         bstree_init(&tree, compare, free);
-        //size_t tree_size = bstree_size(&tree);
+        bstree_destroy(&tree);
+
+        // TODO: Check removing elements from the tree which is not empty.
+        bstree_t tree;
+        bstree_init(&tree, compare, free);
+        size_t size = 7;
+        fill(&tree, (int[]){9, 123, 41, 59, 7, 6, 1, 34}, size);
+        assert(bstree_size(&tree) == size);
+        bstree_destroy(&tree);
 
         printf("%-30s ok\n", __func__);
 }
@@ -101,16 +115,24 @@ void test_bstree_destroy(void)
 {
         bstree_t tree;
         bstree_init(&tree, compare, free);
-        //fill(&tree, [values], size);
-
+        size_t size = 6;
+        fill(&tree, (int[]){5,4,1,7,6,8}, size);
+        assert(bstree_size(&tree) == size);
         bstree_destroy(&tree);
+
         printf("%-30s ok\n", __func__);
 }
 
-//static void fill(bstree_t *tree, int values[], size_t n)
-//{
-//        return;
-//}
+static void fill(bstree_t *tree, int values[], size_t n)
+{
+        int *data = NULL;
+
+        for (size_t i = 0; i < n; i++) {
+                assert((data = (int *) malloc(sizeof(int))) != NULL);
+                *data = values[i];
+                bstree_insert(tree, (void *) data);
+        }
+}
 
 static int compare(const void *value1, const void *value2)
 {
