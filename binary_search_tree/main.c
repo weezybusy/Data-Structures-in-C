@@ -51,7 +51,7 @@ void test_bstree_insert(void)
         assert(data != NULL);
         int val = 5;
         *data = val;
-        bstree_insert(&tree, (void *) data);
+        assert(bstree_insert(&tree, (void *) data) == 0);
         tree_size++;
 
         // Check tree size.
@@ -65,7 +65,7 @@ void test_bstree_insert(void)
         assert(data != NULL);
         val = 4;
         *data = val;
-        bstree_insert(&tree, (void *) data);
+        assert(bstree_insert(&tree, (void *) data) == 0);
         tree_size++;
 
         assert(bstree_size(&tree) == tree_size);
@@ -77,7 +77,7 @@ void test_bstree_insert(void)
         assert(data != NULL);
         val = 6;
         *data = val;
-        bstree_insert(&tree, (void *) data);
+        assert(bstree_insert(&tree, (void *) data) == 0);
         tree_size++;
 
         assert(bstree_size(&tree) == tree_size);
@@ -85,8 +85,14 @@ void test_bstree_insert(void)
         assert(((avlnode_t *) btree_data(btree_root(&tree)))->factor == AVL_BALANCED);
         assert(((avlnode_t *) btree_data(btree_left(btree_root(&tree))))->factor == AVL_BALANCED);
 
-
-        // TODO: Check inserting the data which is already in.
+        // Check inserting the data which is already in.
+        data = (int *) malloc(sizeof(int));
+        assert(data != NULL);
+        val = 6;
+        *data = val;
+        assert(bstree_insert(&tree, (void *) data) == 1);
+        assert(bstree_size(&tree) == tree_size);
+        free(data);
 
         bstree_destroy(&tree);
 
@@ -101,7 +107,6 @@ void test_bstree_remove(void)
         bstree_destroy(&tree);
 
         // TODO: Check removing elements from the tree which is not empty.
-        bstree_t tree;
         bstree_init(&tree, compare, free);
         size_t size = 7;
         fill(&tree, (int[]){9, 123, 41, 59, 7, 6, 1, 34}, size);
