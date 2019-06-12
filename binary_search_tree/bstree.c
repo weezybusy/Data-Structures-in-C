@@ -320,7 +320,6 @@ static int hide(bstree_t *tree, btnode_t *node, const void *data)
         } else {
                 // Mark the node as hidden.
                 ((avlnode_t *) btree_data(node))->hidden = 1;
-                retval = retval;
         }
 
         return retval;
