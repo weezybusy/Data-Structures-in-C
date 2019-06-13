@@ -328,7 +328,7 @@ static int hide(bstree_t *tree, btnode_t *node, const void *data)
 static int lookup(bstree_t *tree, btnode_t *node, void **data)
 {
         int cmpval;
-        int retval = 0;
+        int retval;
 
         if (btree_is_eob(node)) {
                 // Return that the data was not found.
@@ -340,13 +340,14 @@ static int lookup(bstree_t *tree, btnode_t *node, void **data)
         if (cmpval < 0) {
                 // Move to the left.
                 retval = lookup(tree, btree_left(node), data);
-        } else if (cmpval < 0) {
+        } else if (cmpval > 0) {
                 // Move to the right.
                 retval = lookup(tree, btree_right(node), data);
         } else {
                 if (!((avlnode_t *) btree_data(node))->hidden) {
                         // Pass back the data from the tree.
                         *data = ((avlnode_t *) btree_data(node))->data;
+                        retval = 0;
                 } else {
                         // Retrun that the data was not found.
                         retval = -1;

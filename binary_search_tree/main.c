@@ -8,7 +8,7 @@ void test_bstree(void);
 void test_bstree_init(void);
 void test_bstree_destroy(void);
 void test_bstree_insert(void);
-void test_stree_lookup(void);
+void test_bstree_lookup(void);
 void test_bstree_remove(void);
 
 static int compare(const void *value1, const void *value2);
@@ -100,9 +100,26 @@ void test_bstree_insert(void)
         printf("%-30s ok\n", __func__);
 }
 
-void test_stree_lookup(void)
+void test_bstree_lookup(void)
 {
-        // TODO: create tests for lookup.
+        bstree_t tree;
+        bstree_init(&tree, compare, free);
+        int values[] = { 9, 123, 41, 59, 7, 6, 1, 34 };
+        const size_t tree_size = sizeof values / sizeof values[0];
+
+        fill(&tree, values, tree_size);
+        assert(tree.size == tree_size);
+
+        int *data = NULL;
+        for (size_t i = 0; i < tree_size; i++) {
+                data = &values[i];
+                assert(bstree_lookup(&tree, (void **) &data) == 0);
+                assert(*data == values[i]); 
+        }
+        bstree_destroy(&tree);
+
+        // TODO: check lookup of data not in the tree.
+
         printf("%-30s ok\n", __func__);
 }
 
@@ -111,7 +128,7 @@ void test_bstree_remove(void)
         bstree_t tree;
         int *data;
         const int values[] = { 9, 123, 41, 59, 7, 6, 1, 34 };
-        const size_t tree_size = sizeof(values)/sizeof(values[0]);
+        const size_t tree_size = sizeof values / sizeof values[0];
 
         // Check removing from the empty tree.
         bstree_init(&tree, compare, free);
@@ -150,7 +167,7 @@ void test_bstree_destroy(void)
         bstree_t tree;
         bstree_init(&tree, compare, free);
         const int values[] = { 5,4,1,7,6,8 };
-        const size_t tree_size = sizeof(values)/sizeof(values[0]);
+        const size_t tree_size = sizeof values / sizeof values[0];
         fill(&tree, values, tree_size);
         assert(bstree_size(&tree) == tree_size);
         bstree_destroy(&tree);
