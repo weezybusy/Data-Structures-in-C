@@ -13,7 +13,6 @@ void test_heap_extract(void);
 static int compare(const void *value1, const void *value2);
 static void fill(heap_t *heap, int values[], size_t size);
 static int cmp_vals(const heap_t *heap, int values[], size_t size);
-static void sort(int array[], size_t size);
 
 int main(void)
 {
@@ -56,12 +55,13 @@ void test_heap_destroy(void)
 
         // Check destroying heap with some values.
         heap_init(&heap, compare, free);
-        int values[] = { 19, 9, 7, 15, 25, 20, 17, 10, 22, 12 };
-        size_t size = sizeof values / sizeof values[0];
+        int orig_values[] = { 19, 9, 7, 15, 25, 20, 17, 10, 22, 12 };
+        int heap_values[] = { 25, 22, 20, 19, 15, 7, 17, 9, 10, 12 };
+        size_t size = sizeof orig_values / sizeof orig_values[0];
 
-        fill(&heap, values, size);
+        fill(&heap, orig_values, size);
         assert(heap_size(&heap) == size);
-        assert(cmp_vals(&heap, values, size) == 0);
+        assert(cmp_vals(&heap, heap_values, size) == 0);
         heap_destroy(&heap);
         assert(heap.size == 0);
         assert(heap.tree == NULL);
@@ -75,12 +75,24 @@ void test_heap_insert(void)
 {
         heap_t heap;
         heap_init(&heap, compare, free);
-        int values[] = { 19, 9, 7, 15, 25, 20, 17, 10, 22, 12 };
-        size_t size = sizeof values / sizeof values[0];
+        int orig_values[] = { 19, 9, 7, 15, 25, 20, 17, 10, 22, 12 };
+        int heap_values[] = { 25, 22, 20, 19, 15, 7, 17, 9, 10, 12 };
+        size_t size = sizeof orig_values / sizeof orig_values[0];
+        int *data = NULL;
 
-        fill(&heap, values, size);
+        // Fill the heap.
+        for (size_t i = 0; i < size; i++) {
+                data = (int *) malloc(sizeof(int));
+                assert(data != NULL);
+                *data = orig_values[i];
+                heap_insert(&heap, data);
+        }
+        // Check the sizes match.
         assert(heap_size(&heap) == size);
-        assert(cmp_vals(&heap, values, size) == 0);
+        // Check the values match.
+        assert(cmp_vals(&heap, heap_values, size) == 0);
+        // Check that largest element is on the top of the heap.
+        assert(*(int *) heap.tree[0] == 25);
         heap_destroy(&heap);
 
         printf("%-30s ok\n", __func__);
@@ -88,6 +100,23 @@ void test_heap_insert(void)
 
 void test_heap_extract(void)
 {
+        heap_t heap;
+        heap_init(&heap, compare, free);
+        int orig_values[] = { 19, 9, 7, 15, 25 };
+        int heap_values[] = { 25, 19, 7, 9, 15 };
+        size_t size = sizeof orig_values / sizeof orig_values[0];
+        int *data = NULL;
+
+        fill(&heap, orig_values, size);
+        assert(heap_size(&heap) == size);
+        assert(cmp_vals(&heap, heap_values, size) == 0);
+        for (size_t i = 0; i < size; i++) {
+                heap_extract(&heap, (void **) &data);
+                // TODO: find heap_values after each extraction.
+                free(data);
+        }
+        heap_destroy(&heap);
+
         printf("%-30s ok\n", __func__);
 }
 
@@ -107,7 +136,7 @@ static int compare(const void *value1, const void *value2)
 
 static void fill(heap_t *heap, int values[], size_t size)
 {
-        int *data;
+        int *data = NULL;
         for (size_t i = 0; i < size; i++) {
                 data = (int *) malloc(sizeof(int));
                 assert(data != NULL);
@@ -118,43 +147,10 @@ static void fill(heap_t *heap, int values[], size_t size)
 
 static int cmp_vals(const heap_t *heap, int values[], size_t size)
 {
-        int heap_dup[size];
-
-        // Copy heap values to array.
         for (size_t i = 0; i < size; i++) {
-                heap_dup[i] = *(int *) heap->tree[i];
-        }
-
-        // Sort arrays.
-        sort(heap_dup, size);
-        sort(values, size);
-
-        // Compare arrays.
-        for (size_t i = 0; i < size; i++) {
-                if (heap_dup[i] != values[i]) {
+                if (*(int *) heap->tree[i] != values[i]) {
                         return -1;
                 }
         }
-
         return 0;
-}
-
-static void sort(int array[], size_t size)
-{
-        size_t key;
-        int temp;
-
-        for (size_t i = 0; i < size - 1; i++) {
-                key = i;
-                for (size_t j = i + 1; j < size; j++) {
-                        if (array[j] < array[key]) {
-                                key = j;
-                        }
-                }
-                if (key != i) {
-                        temp = array[i];
-                        array[i] = array[key];
-                        array[key] = temp;
-                }
-        }
 }
