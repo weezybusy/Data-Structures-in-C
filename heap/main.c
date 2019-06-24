@@ -110,9 +110,15 @@ void test_heap_extract(void)
         fill(&heap, orig_values, size);
         assert(heap_size(&heap) == size);
         assert(cmp_vals(&heap, heap_values, size) == 0);
+
         for (size_t i = 0; i < size; i++) {
                 heap_extract(&heap, (void **) &data);
-                // TODO: find heap_values after each extraction.
+                for (size_t j = 0; j < size - i - 1; j++) {
+                        printf(" %d", *(int *) heap.tree[j]);
+                }
+                printf("\n");
+                // TODO: make sense to create is_heapified() function to
+                // check heap state after each extraction.
                 free(data);
         }
         heap_destroy(&heap);
@@ -127,7 +133,7 @@ static int compare(const void *value1, const void *value2)
 
         if (v1 < v2) {
                 return -1;
-        } else if (v2 > v1) {
+        } else if (v1 > v2) {
                 return 1;
         } else {
                 return 0;

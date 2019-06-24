@@ -134,7 +134,7 @@ int heap_extract(heap_t *heap, void **data)
                 }
 
                 if (rpos < heap_size(heap) &&
-                                heap->compare(heap->tree[rpos], heap->tree[ipos]) > 0) {
+                                heap->compare(heap->tree[rpos], heap->tree[mpos]) > 0) {
                         mpos = rpos;
                 }
 
