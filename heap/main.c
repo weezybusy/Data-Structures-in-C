@@ -13,6 +13,7 @@ void test_heap_extract(void);
 static int compare(const void *value1, const void *value2);
 static void fill(heap_t *heap, int values[], size_t size);
 static int cmp_vals(const heap_t *heap, int values[], size_t size);
+static int is_balanced(const heap_t *heap);
 
 int main(void)
 {
@@ -89,6 +90,8 @@ void test_heap_insert(void)
         }
         // Check the sizes match.
         assert(heap_size(&heap) == size);
+        // Check the heap is balanced.
+        assert(is_balanced(&heap));
         // Check the values match.
         assert(cmp_vals(&heap, heap_values, size) == 0);
         // Check that largest element is on the top of the heap.
@@ -109,18 +112,15 @@ void test_heap_extract(void)
 
         fill(&heap, orig_values, size);
         assert(heap_size(&heap) == size);
+        assert(is_balanced(&heap));
         assert(cmp_vals(&heap, heap_values, size) == 0);
 
         for (size_t i = 0; i < size; i++) {
                 heap_extract(&heap, (void **) &data);
-                for (size_t j = 0; j < size - i - 1; j++) {
-                        printf(" %d", *(int *) heap.tree[j]);
-                }
-                printf("\n");
-                // TODO: make sense to create is_heapified() function to
-                // check heap state after each extraction.
+                assert(is_balanced(&heap));
                 free(data);
         }
+        assert(heap_size(&heap) == 0);
         heap_destroy(&heap);
 
         printf("%-30s ok\n", __func__);
@@ -159,4 +159,31 @@ static int cmp_vals(const heap_t *heap, int values[], size_t size)
                 }
         }
         return 0;
+}
+
+static int is_balanced(const heap_t *heap)
+{
+        size_t j;
+        int parent;
+
+        if (heap->size == 1) {
+                return 1;
+        }
+
+        for (size_t i = 0; i < heap->size; i++) {
+
+                parent = *(int *) heap->tree[i];
+
+                j = i * 2 + 1;
+                if (j < heap->size && parent <= *(int *) heap->tree[j]) {
+                        return 0;
+                }
+
+                j = i * 2 + 2;
+                if (j < heap->size && parent <= *(int *) heap->tree[j]) {
+                        return 0;
+                }
+        }
+
+        return 1;
 }
